@@ -28,9 +28,6 @@ def read_temp():
         return temp_c, temp_f
 	
 while True:
-	print(read_temp())
-	#return printlines
-	time.sleep(3)
 	#fh = open("tempout.txt", 'w')
 	#fh.write(read_temp())
 	#fh.write(temp_c, temp_f)
@@ -39,12 +36,12 @@ while True:
 	#f.write('read_temp = ' + repr(read_temp) + '\n')
 	#f.write('read_temp, (read_temp, repr(val))' + '\n')
 	#f.write(temp_c, temp_f)
-	#currenttime = print(datetimenow)
-	#currenttemp = temp_c
-	f.write('Temperature at' )
+	currenttime = print(datetime, datetimenow())
+	currenttemp = print(read_temp, read_temp())
+	f.write('Temperature at' + currenttime + currenttemp)
 	f.close()
-	#print(read_temp())	
-	#time.sleep(3)
+	print(read_temp())	
+	time.sleep(1)
     	#f = open(/tmp/temp.txt, 'w')
     	#lines = f.readlines()
     	#f.close()
