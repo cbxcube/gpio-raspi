@@ -1,6 +1,7 @@
 import os
 import glob
 import time
+import datetime
 #initialize the device 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
@@ -25,12 +26,13 @@ def read_temp():
         temp_string = lines[1][equals_pos+2:]
         temp_c = float(temp_string) / 1000.0
         temp_f = temp_c * 9.0 / 5.0 + 32.0
-        return temp_c, temp_f
+	date_now = datetime.datetime.now()
+        return temp_c, temp_f, date_now
 	
 while True:
 	print(read_temp())
 	#return printlines
-	time.sleep(3)
+	time.sleep(90)
 	#fh = open("tempout.txt", 'w')
 	#fh.write(read_temp())
 	#fh.write(temp_c, temp_f)
