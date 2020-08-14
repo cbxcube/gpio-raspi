@@ -1,0 +1,11 @@
+ave the above code as test_lcd.py and enter sudo python test_lcd.py
+My code assumes that the first 4 bits of the LCD(11,12,13,14) are connected to P0,P1,P2,P3 ports on PCF8574. The next 3 ports on PCF8574(P4,P5,P6) should be connected to 4-RS, 5-R/W, 6-E.However there are other serial backpack lcd's with different pinouts. According to the wiring of your serial backpack LCD you can override the default mapping during initialization.There are 3 modes available-
+lcd = pylcdlib.lcd(0x21,0)   lower 4 bits of expander are commands bits
+lcd = pylcdlib.lcd(0x21,0,1)   top 4 bits of expander are commands bits AND   P0-4   P1-5   P2-6
+lcd = pylcdlib.lcd(0x21,0,2)   top 4 bits of expander are commands bits AND   P0-6   P1-5   P2-4
+
+(Update):- If you have a Raspberry Pi with a revision 2.0 board, you need to use I²C bus 1, not bus 0, so you will need to change the bus number used. In this case, the line lcd = pylcdlib.lcd(0x21,0) would become lcd = pylcdlib.lcd(0x21,1). 
+
+You can check that the device is present on the bus by using the i2cdetect program from the i2ctools package-
+i2cdetect 0 -y  or i2cdetect 1 -y 
+

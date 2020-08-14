@@ -1,0 +1,136 @@
+alias ll="ls -lah"
+alias lt="ls -latr"
+
+# bash debug 
+alias bashcond="help test"
+alias bashx="bash -x"
+alias bashn="bash -n"
+
+# edit profile/bashrc
+alias viprofile="vi ~/.bash_profile"
+alias vibashrc="vi ~/.bashrc"
+alias vimotd="sudo vi /etc/motd"
+alias sourceprofile="source ~/.bash_profile"
+
+# file operations
+alias inprogle="vim /home/cubic/Dropbox/scripts/python/__INPROGRESS_PROJECTS.txt"
+alias inprogl="cat /home/cubic/Dropbox/scripts/python/__INPROGRESS_PROJECTS.txt"
+alias fslint="sudo /usr/share/fslint/fslint/fslint"
+alias fslintgui="/home/cubic/Dropbox/scripts/python/fslint-2.44/fslint-gui"
+# apt
+alias agu="sudo apt-get update"
+alias agi="sudo apt-get install"
+
+# gui
+alias 9menu="/home/cubic/Dropbox/scripts/bash/9menu"
+
+# new gnome terminal from current path
+alias gterm="echo $(pwd)|/usr/bin/gnome-terminal"
+alias newhere="echo $PWD |gnome-terminal"
+
+# check folder size
+alias foldsize="du -m"
+alias dropbxsze="du -m ~/Dropbox/* |sort -nk1,1"
+
+# tar and gzip folder
+# usage : tar -zcvf archive.tar.gz folder
+alias archfold="tar -zcvf"
+
+# cd there and back
+alias cdd="cd /home/cubic/Dropbox"
+alias cds="cd /home/cubic/Dropbox/scripts"
+alias cdb="cd /home/cubic/Dropbox/scripts/bash"
+alias cdo="cd /home/cubic/ownCloud"
+alias cdos="cd /home/cubic/ownCloud/SyncDocs"
+alias cdpy="cd /home/cubic/Dropbox/scripts/python"
+alias cdpy3="cd /home/cubic/Dropbox/scripts/python/python3"
+alias cdpy3d="cd /home/cubic/Dropbox/scripts/python/python3/3d_graphics"
+alias cdpy3p="cd /home/cubic/Dropbox/scripts/python/python3/projects"
+alias cdpys="cd /home/cubic/Dropbox/scripts/python/snippets"
+alias cd.="cd .."
+alias cd..="cd ../.."
+alias cd...="cd ../../.."
+alias cd....="cd ../../../.."
+alias cd.....="cd ../../../../.."
+
+# toggle between last used dirs 
+alias togdir="cd -"
+
+# new terminal from this path
+alias newhere="echo $PWD|gnome-terminal"
+
+# Ansible:
+alias apl="/usr/bin/ansible"
+
+# Bandwidth tests
+alias pyspdtst="/usr/bin/python2.7 /home/cubic/Dropbox/scripts/python/tespeed/tespeed-p27.py"
+alias pyspdtst2="/home/cubic/Dropbox/scripts/python/tespeed2/speedtest-cli"
+
+# restart networking and network manager
+alias nwrestart="sudo /etc/init.d/networking restart; sleep 1; sudo /etc/init.d/network-manager restart"
+
+# devices:
+alias blkdevice="sudo ls -l /dev | grep \^b"
+alias chrdevice="sudo ls -l /dev | grep \^c"
+alias socketfile="sudo ls -l /dev | grep \^s"
+alias lnfile="sudo ls -l  | grep \^l"
+
+
+# diagnostics: 
+alias wlani='sudo iwconfig wlan0|grep -iE "ESSID|Frequency|Rate|Quality"'
+
+# what is on run queue : 
+alias runq="ps -eo stat,pid,user,command | egrep \"^STAT|^D|^R\""
+alias runqq="ps r -A"
+alias runwatch="while true; do runq; echo; uptime|tail -1; echo; sleep 5; done"
+
+# todo app on kimsufi
+alias todol="/home/cubic/Dropbox/scripts/bash/todolite.sh"
+
+# Terminal prompt:
+# - Managed in .bashrc
+#
+# PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '
+
+
+
+# Path : 
+
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/cubic/.local/bin:"
+
+
+### Notes STDO:
+
+
+### MOVE THIS PART TO TERMINAL MESSAGE FILE!
+echo "######################################"
+echo "# info wall : "
+# cat /home/cubic/Dropbox/scripts/python/__INPROGRESS_PROJECTS.txt
+echo
+echo "# CLI#1 tool for bandwidth: pyspdtst2"
+echo "# CLI tool for bandwidth: iperf -s server.domain"
+echo 
+echo "Automatic collection of bandwidth logs on startup ENABLED : "
+echo 	"Logs location = /home/cubic/Dropbox/scripts/python/monspeed/monspeed2logs"
+echo "configuration of autostart : "
+echo "1) /home/cubic/.config/autostart/bandwidthmon.desktop"
+echo "2) /etc/init.d/bandwidthmon"
+echo " NOTE !!!! : Remove one of these 2 options !!!!"
+echo
+echo
+echo " "gterm" for new gnome terminal"
+
+echo "blkdevice, chrdevice=, socketfile=, lnfile= : to show blcok devices"
+
+
+echo 
+echo " to list progress of proc : pkill -USR1 -n -x <proc_here>"
+echo " example : pkill -USR1 -n -x dd"
+
+echo " monitor Tx of WLAN : watch -n1 iwconfig "
+# sudo iwconfig |grep -iE "Tx-Power=|wlan" |tail -4 |grep -iE "wlan|docker"
+echo "For information about wifi use " wlani ""
+
+echo "For renicing the process use : renice 10 -p 21827"
+echo "For samba shares from cmd line : cd /run/user/1000/gvfs"
+echo "For duplicate files identification use : 'fslint <folder'"

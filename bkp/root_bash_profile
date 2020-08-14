@@ -1,0 +1,29 @@
+# diagnostics : 
+# 
+# what is on run queue : 
+alias runq="ps -eo stat,pid,user,command | egrep \"^STAT|^D|^R\""
+alias runqq="ps r -A"
+alias runwatch="while true; do runq; echo; uptime|tail -1; echo; sleep 5; done"
+
+alias ll="ls -lah"
+
+alias livelog="tail -f /var/log/messages"
+alias agu="apt-get update"
+alias agi="apt-get install"
+
+# new terminal from this path
+alias newhere="echo $PWD|gnome-terminal"
+
+# Calling applications : 
+# speedtest :
+alias pyspdtst="/usr/bin/python2.7 /home/cubic/Dropbox/scripts/python/tespeed/tespeed-p27.py"
+
+# restart networking and network manager
+alias nwrestart="/etc/init.d/networking restart; sleep 1; /etc/init.d/network-manager restart"
+
+# MONITORING : 
+echo "CPU RUN QUEUE"
+echo " #of currently runnable kernel sched entities / #of kernel sched entities that currently exist on sys / pid of last proc on sys"
+cat /proc/loadavg
+
+source ~/.bashrc
