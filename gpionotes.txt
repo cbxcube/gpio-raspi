@@ -1,0 +1,8 @@
+GPIO 
+
+I2C TOOLS:
+##########
+
+apt install i2c-tools python-smbus
+i2* tools
+i2detect, i2dump....
