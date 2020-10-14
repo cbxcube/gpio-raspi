@@ -177,6 +177,13 @@ Now add su -l pi -c startx above the line that says exit 0:
 
 Press Ctrl-X then Y to exit nano and save the changes.
 
+
+
+###### 
+MODEL 2 B
+##########################
+
+
 If you are using the Raspberry Pi 2 Model B, the next step is to set the system to boot to the desktop GUI in the raspi-config menu. If you are using versions of Raspbian earlier than 1-31-15 on the Model B+, you can skip this part.
 
 At the command prompt, enter sudo raspi-config.
