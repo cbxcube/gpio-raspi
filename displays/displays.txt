@@ -1,0 +1,244 @@
+GPIO 
+
+I2C TOOLS:
+##########
+
+apt install i2c-tools python-smbus
+i2* tools
+i2detect, i2dump....
+
+
+
+
+#########################################
+CONFIGURE DISPLAY - TFT TOUCHSCREEN - ADAFRUIT PITFTP - PORTABLE HACKING STATION
+#########################################
+
+Step Three: Plug Everything In and Power On
+With the display attached, it’s time to plug everything else in. Plug the Wi-Fi adapter and the keyboard into the USB ports. Then, plug the Pi into your battery pack.
+
+The startup process can be a bit slow and clunky here, so don’t worry if it takes a little while. First, you’ll see a white screen for a little while before the boot process starts up. Eventually, you’re greeted by a login screen.
+
+If you’re using a Raspberry Pi 2, you’ll need to go through some setup stuff here to get the screen working. If you’re using the B+, skip to the next step.
+
+The Raspberry Pi 2 currently requires some extra steps to get the screen working. When you initially boot it up, you’re greeted by a sad, white screen. Thankfully, it’s not too troublesome to get the screen working. Unfortunately, you’ll need either an HDMI monitor to attach the Pi to, or you’ll need to login over SSH to get through this part. Go ahead and connect either of those and boot up the Pi now.
+
+You’ll see a username and password prompt from the command line on your Raspberry Pi. Type in the username root and password toor.
+Start by mounting the boot partition. Type in mount /dev/mmcblk0p1 /boot and press Enter.
+Next, you’ll download and install Adafruit’s setup software. Type in wget http://adafruit-download.s3.amazonaws.com/adafruit_pitft_kernel_1.20150420-1.tar.gzand press Enter.
+Type in tar xf adafruit_pitft_kernel_1.20150420-1.tar.gz and press Enter to extract that file.
+Type in cd adafruit_pitft_kernel_1.20150420-1 and press Enter.
+Type in ./install.sh and press Enter. This will take a while. When it’s finished, it’ll ask you to reboot. Say yes and wait for the reboot.
+Type in git clone https://github.com/adafruit/Adafruit-PiTFT-Helper.git and press Enter to download Adafruit’s screen software.
+Okay, now you need to mount the boot disk again. Type in mount /dev/mmcblk0p1 /boot and press Enter.
+Type in cd Adafruit-PiTFT-Helper and press Enter.
+Type in./adafruit-pitft-helper -u /root/ -t 28r and press Enter. This configures your display.
+Now you’ll need to fix some issues with the boot screen only showing a blinking cursor. Type in sudo apt-get install xserver-xorg-video-fbdev and press Enter.
+Once that’s complete, type in cd /usr/share/X11/xorg.conf.d/ and press Enter.
+Finally, type in nano 99-fbdev.conf and press Enter. This will open a text file. You’ll need to copy the following bit of code into the file:
+Section “Device”
+Identifier “myfb”
+Driver “fbdev”
+Option “fbdev” “/dev/fb1”
+EndSection
+When you’re done, press Ctrl+X to save and exit.
+
+That should do it. Go ahead and type reboot and press Enter to restart your Pi with a working screen.
+
+
+
+
+#########################################
+CONFIGURE DISPLAY - TFT TOUCHSCREEN - Non ADAFRUIT
+#########################################
+
+1. CONFIGURE THE FBTURBO DRIVER
+
+Now you need to configure the fbturbo video driver to output the Raspberry Pi’s display to the SPI bus instead of the HDMI bus. Enter this at the command prompt
+
+Find the line that says Option "fbdev" "/dev/fb0" and change the fb0 to fb1:
+update /usr/share/X11/xorg.conf.d/99-fbturbo.conf
+
+Change line with "Option" as follows:
+old: Option          "fbdev" "/dev/fb0"
+new: Option          "fbdev" "/dev/fb1"
+
+-> fb0 is reserved for HDMI on Raspberry Pi
+
+2. uncomment kernel modules for SPI and IC2 in file: 
+ /etc/modprobe.d/raspi-blacklist.conf 
+
+lines to uncomment! -> We need to comment blacklisting so it is not actually blacklisted:
+
+DEFAULT_STATE:
+blacklist spi-bcm2708
+blacklist i2c-bcm2708
+
+UPDATED_STATE:
+#blacklist spi-bcm2708
+#blacklist i2c-bcm2708
+
+If you’re using a version of Raspbian that was released before 1-31-2015, you’ll need to enable SPI by removing the entry from the blacklist file. If you’re using a version of Raspbian released after 1-31-2015, this can be done in the raspi-config menu.
+
+
+3.  INSTALL THE FBTFT DRIVERS
+Note: As of the 1-31-15 release of Raspbian, the fbturbo drivers are now included and enabled by default. So skip this step if your Raspbian OS was released 1-31-15 or later.
+
+Now you need to download and install the drivers and kernel modules that are needed to run the LCD touchscreen. Enter this at the command prompt:
+
+sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
+
+4.  CONFIGURE THE KERNEL MODULES
+After the Pi is booted up and you’ve logging back in, the next step is to configure the kernel modules for the LCD display and touchscreen sensors. To do that we need to edit the /etc/modules file. So enter this at the command prompt:
+
+sudo nano /etc/modules
+
+BEGINNING_OF_ORIGINAL_FILE: 
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
+# Parameters can be specified after the module name.
+
+snd-bcm2835
+#i2c-dev
+END_OF_ORIGINAL_FILE:
+
+The first term of each line in this file is the name of a kernel module that will be loaded automatically at boot time. The terms after the name of the kernel module on each line are called parameters, and parameters can be changed to adjust the properties of each kernel module.
+
+Currently, the only module that is set to load automatically is snd-bcm2835, which is the module for the Raspberry Pi’s Broadcom processor.
+
+Add this code below the snd-bcm2835 line to support the fbtft_device and ads7846_device modules:
+
+BEGINNING_OF_UPDATED_FILE:
+root@raspberrypi:~# cat /etc/modules
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
+# Parameters can be specified after the module name.
+
+# TFT LCD SCREEN AND SERIAL PORT
+snd-bcm2835
+spi-bcm2708     # MODEL B+(pi 2)   # You can get hw by cat /proc/cpuinfo |grep Hardware
+
+fbtft_device name=waveshare32b gpios=dc:22,reset:27 speed=48000000
+
+waveshare32b width=320 height=240 buswidth=8 init=-1,0xCB,0x39,0x2C,0x00,0x34,0x02,-1,0xCF,0x00,0XC1,0X30,-1,0xE8,0x85,0x00,0x78,-1,0xEA,0x00,0x00,-1,0xED,0x64,0x03,0X12,0X81,-1,0xF7,0x20,-1,0xC0,0x23,-1,0xC1,0x10,-1,0xC5,0x3e,0x28,-1,0xC7,0x86,-1,0x36,0x28,-1,0x3A,0x55,-1,0xB1,0x00,0x18,-1,0xB6,0x08,0x82,0x27,-1,0xF2,0x00,-1,0x26,0x01,-1,0xE0,0x0F,0x31,0x2B,0x0C,0x0E,0x08,0x4E,0xF1,0x37,0x07,0x10,0x03,0x0E,0x09,0x00,-1,0XE1,0x00,0x0E,0x14,0x03,0x11,0x07,0x31,0xC1,0x48,0x08,0x0F,0x0C,0x31,0x36,0x0F,-1,0x11,-2,120,-1,0x29,-1,0x2c,-3
+
+ads7846_device model=7846 cs=1 gpio_pendown=17 speed=1000000 keep_vref_on=1 swap_xy=0 pressure_max=255 x_plate_ohms=60 x_min=200 x_max=3900 y_min=200 y_max=3900
+
+# I2C DISPLAYS:
+i2c-dev
+END_OF_UPDATED_FILE:
+
+
+The kernel module for the LCD screen is called fbtft_device and the kernel module for the touchscreen is called ads7846_device. ads7846 is the name of the touchscreen controller chip used in the Waveshare 3.2″ LCD and many other touchscreen displays.
+
+If you are not using the Waveshare 3.2″ Touchscreen LCD, first find the fbtft_device name of your device by checking here. Next, on the line that begins with fbtft_device, change the term name=waveshare32b to name=YOUR DEVICE NAME. Now, on the next line that begins with waveshare32b, change the waveshare32b term to your own device name, for example adafruit28, or sainsmart32_spi. 
+
+Press Ctrl-X then Y to exit Nano and save the changes.
+
+
+
+#### NOTE: I'm using "pitft" touchscreen not "waveshare32b" touchscreen. >>
+replace in /etc/modules waveshare32b string in list of modules and module parameters (beginning of the line only) and replace with "pitft"
+
+
+
+4.   EDIT THE /BOOT/CMDLINE.TXT FILE
+Now we need to edit the /boot/cmdline.txt file which contains all of the settings used to configure the system when it boots up. This file is read by the GPU (graphics processing unit), before it is read by the CPU (central processing unit) and the Linux OS. It is equivalent to BIOS in other systems, and contains lots of useful options for configuring your system at boot time. To edit this file, enter sudo nano /boot/cmdline.txt at the command prompt.
+
+
+Replace the code in this file with this code, entered in one single line:
+
+dwc_otg.lpm_enable=0 console=ttyAMA0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait fbtft_device.custom fbtft_device.name=waveshare32b fbtft_device.gpios=dc:22,reset:27 fbtft_device.bgr=1 fbtft_device.speed=48000000 fbcon=map:10 fbcon=font:ProFont6x11 logo.nologo dma.dmachans=0x7f35 console=tty1 consoleblank=0 fbtft_device.fps=50 fbtft_device.rotate=0
+
+
+Note: This line is really long, so make sure you get everything, and copy/paste to avoid typos.
+
+Similarly to what was done in step 4 above, if you are not using the Waveshare 3.2″ Touchscreen LCD, first find the fbtft_device name of your device by checking here. Then replace fbtft_device.name=waveshare32b in the code above with fbtft_device.name=YOUR DEVICE NAME.
+
+Press Ctrl-X then Y to exit Nano and save the changes.
+
+
+MY_VERSION_WITH_PITFT:
+oot@raspberrypi:~# cat /boot/cmdline.txt
+dwc_otg.lpm_enable=0 console=ttyAMA0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait fbtft_device.custom fbtft_device.name=pitft fbtft_device.gpios=dc:22,reset:27 fbtft_device.bgr=1 fbtft_device.speed=48000000 fbcon=map:10 fbcon=font:ProFont6x11 logo.nologo dma.dmachans=0x7f35 console=tty1 consoleblank=0 fbtft_device.fps=50 fbtft_device.rotate=0
+
+
+
+
+5.   CONFIGURE STARTX TO LOAD AUTOMATICALLY
+The final step is to setup the Pi to load startx automatically and boot to the GUI. If you would rather boot to the command prompt, just skip this step. Enter sudo nano /etc/rc.local at the command prompt:
+
+Now add su -l pi -c startx above the line that says exit 0:
+
+
+Press Ctrl-X then Y to exit nano and save the changes.
+
+
+
+###### 
+MODEL 2 B
+##########################
+
+
+If you are using the Raspberry Pi 2 Model B, the next step is to set the system to boot to the desktop GUI in the raspi-config menu. If you are using versions of Raspbian earlier than 1-31-15 on the Model B+, you can skip this part.
+
+At the command prompt, enter sudo raspi-config.
+
+Select the line that says “Desktop Log in as user ‘pi’ at the graphical desktop”, and press enter. Now exit the raspi-config menu.
+
+At the command prompt, enter sudo reboot, and after the Pi boots up the GUI should appear on the LCD screen:
+
+It is probably due to your Pi being overclocked at turbo speed or Pi 2 speed. Try the high setting or lower to fix this.
+
+There have been some issues with the FBTFT drivers when using sudo update and sudo upgrade. Some people have reported that after updating and upgrading, the LCD touchscreen stops working. This seems to be caused by the Raspberry Pi bootloader package overwriting the FBTFT kernel and modules during the update/upgrade install. To prevent this from happening, update and upgrade by:
+
+1. Updating all packages except for the Raspberry Pi bootloader by entering this at the command prompt:
+
+sudo apt-mark hold raspberrypi-bootloader
+sudo apt-get update
+sudo apt-get upgrade
+2. Then, updating the Raspberry Pi bootloader independently by entering this at the command prompt:
+
+sudo apt-get install rpi-update
+sudo SKIP_KERNEL=1 rpi-update
+If your drivers have been accidentally overwritten, they can be restored without having to go through the entire installation process again. Just enter this at the command prompt:
+
+sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
+sudo reboot
+More information about this issue can be found here.
+
+Continue on to the next article Raspberry Pi Touchscreen Calibration and Screen Rotation to find out how to change the screen orientation of your Raspberry Pi and calibrate the touchscreen for the best accuracy.
+
+If you have any problems setting up your Raspberry Pi LCD touchscreen, please leave a comment below and I will try to help you solve it…
+
+Please share this if you found it useful, and subsribe to get more tutorial like this in your inbox!It is probably due to your Pi being overclocked at turbo speed or Pi 2 speed. Try the high setting or lower to fix this.
+
+There have been some issues with the FBTFT drivers when using sudo update and sudo upgrade. Some people have reported that after updating and upgrading, the LCD touchscreen stops working. This seems to be caused by the Raspberry Pi bootloader package overwriting the FBTFT kernel and modules during the update/upgrade install. To prevent this from happening, update and upgrade by:
+
+1. Updating all packages except for the Raspberry Pi bootloader by entering this at the command prompt:
+
+sudo apt-mark hold raspberrypi-bootloader
+sudo apt-get update
+sudo apt-get upgrade
+2. Then, updating the Raspberry Pi bootloader independently by entering this at the command prompt:
+
+sudo apt-get install rpi-update
+sudo SKIP_KERNEL=1 rpi-update
+If your drivers have been accidentally overwritten, they can be restored without having to go through the entire installation process again. Just enter this at the command prompt:
+
+sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
+sudo reboot
+More information about this issue can be found here.
+
+Continue on to the next article Raspberry Pi Touchscreen Calibration and Screen Rotation to find out how to change the screen orientation of your Raspberry Pi and calibrate the touchscreen for the best accuracy.
+
+If you have any problems setting up your Raspberry Pi LCD touchscreen, please leave a comment below and I will try to help you solve it…
+
+Please share this if you found it useful, and subsribe to get more tutorial like this in your inbox!
+
+
+SOURCE: https://www.circuitbasics.com/setup-lcd-touchscreen-raspberry-pi/

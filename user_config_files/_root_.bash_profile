@@ -21,3 +21,7 @@ cat /etc/motd
 # execute
 gpio readall
 i2cdetect -y 1
+
+echo "aliases: "
+alias
+
