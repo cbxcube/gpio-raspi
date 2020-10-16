@@ -1,0 +1,66 @@
+source: https://learn.adafruit.com/adafruit-pitft-28-inch-resistive-touchscreen-display-raspberry-pi/easy-install-2
+
+
+Installer script
+This script will do all the work for you, and install both device tree overlay support as well as configure rotation and any HDMI mirroring. PiTFT no longer needs any custom kernels or modules, so you can continue to update/upgrade your Pi and it will work with the most recent releases.
+
+Here's the commands to run. Make sure your Pi has network access, it needs to download the software!
+
+The latest installer script was rewritten in Python, so it can be installed with just a few commands. First, start by installing a few dependencies and downloading the repo:
+
+cd ~
+sudo pip3 install --upgrade adafruit-python-shell click==7.0
+sudo apt-get install -y git
+git clone https://github.com/adafruit/Raspberry-Pi-Installer-Scripts.git
+cd Raspberry-Pi-Installer-Scripts
+
+
+
+Easy Single Command Install Options
+#####################
+
+The latest script allows you to specify all of your options within the command so you can sit back and watch the installation. We'll cover interactive installation below if you want to answer each prompt for a customized installation.
+
+Console Install Commands
+#####################
+
+If you just want a console to appear on the display, you will want to use the following commands:
+
+For the PiTFT 2.4", 2.8", or 3.2" Resistive touchscreens, use the following command:
+Download: file
+Copy Code
+
+    sudo python3 adafruit-pitft.py --display=28r --rotation=90 --install-type=console
+
+For the PiTFT 2.8" Capacitive touchscreen, use the following command:
+Download: file
+Copy Code
+
+    sudo python3 adafruit-pitft.py --display=28c --rotation=90 --install-type=console
+
+
+FBCP Install Commands
+#####################
+
+If you just want to mirror the HDMI output to the display, which is known as FrameBuffer Copy, you will want to use the following commands:
+
+For the PiTFT 2.4", 2.8", or 3.2" Resistive touchscreens, use the following command:
+Download: file
+Copy Code
+
+    sudo python3 adafruit-pitft.py --display=28r --rotation=90 --install-type=fbcp
+
+For the PiTFT 2.8" Capacitive touchscreen, use the following command:
+Download: file
+Copy Code
+
+    sudo python3 adafruit-pitft.py --display=28c --rotation=90 --install-type=fbcp
+
+Interactive Installation
+#####################
+
+For an interactive install, you can just run the script without any options:
+
+sudo python3 adafruit-pitft.py
+
+Once you run it you will be presented with menus for configuration.
